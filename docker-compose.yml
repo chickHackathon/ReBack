@@ -1,0 +1,11 @@
+services:
+  mariadb:
+    image: mariadb:11.5.2
+    container_name: chick
+    environment:
+      MARIADB_ROOT_PASSWORD: qwer1234
+      MARIADB_DATABASE: chick
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./db/:/var/lib/mysql
