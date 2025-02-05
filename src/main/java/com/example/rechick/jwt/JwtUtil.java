@@ -84,4 +84,17 @@ public class JwtUtil {
         cookie.setMaxAge(0);
         return cookie;
     }
+    public Long getExpirationTime(String token) {
+        try {
+            Date expiration = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+            return expiration.getTime() - System.currentTimeMillis();
+        } catch (Exception e) {
+            return 0L; // 유효하지 않은 토큰이면 0 반환
+        }
+    }
 }

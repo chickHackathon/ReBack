@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +28,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, String> redisTemplate;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     @Value("${frontend.url}")
@@ -57,7 +59,7 @@ public class SecurityConfig {
 
         http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint)); // 인가되지 않은 사용자가 요청을 보냈을 때 처리하는 handler
 
-        http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 
         LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager);
         loginFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
