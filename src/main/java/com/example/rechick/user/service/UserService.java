@@ -23,7 +23,7 @@ public class UserService {
 
         // User 객체 생성
         User user = User.builder()
-                .name(req.getName())
+                .username(req.getName())
                 .password(hashedPassword) // 암호화된 비밀번호 저장
                 .nickname(req.getNickname())
                 .email(req.getEmail())
