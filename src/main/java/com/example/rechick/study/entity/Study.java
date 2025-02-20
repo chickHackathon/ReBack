@@ -11,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -25,8 +27,6 @@ public class Study {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //  대표이미지(s3)
-
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -34,31 +34,35 @@ public class Study {
     @Column(name = "Img")
     private String Img = "";
 
-    @ManyToOne(fetch = LAZY)
+    // 방장 (다대일 관계)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // 방장
+
+    // 스터디원 (다대다 관계)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "study_members",
+            joinColumns = @JoinColumn(name = "study_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> users = new ArrayList<>(); // 스터디원 목록
 
     @Column(name = "title", length = 100)
-    private String title; // varchar(100)
+    private String title;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
-    private String content; // text
+    private String content;
 
-    @Column(name = "created_at")
     @CreatedDate
-    private LocalDateTime createdAt; // datetime
-
-    @Column(name = "deadline")
+    private LocalDateTime createdAt;
+    @Column(name = "deadline", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime deadLine;
     @CreatedDate
-    private LocalDateTime deadline; // datetime
+    private LocalDateTime studyTime;
 
-    @Column(name = "study_time")
-    @CreatedDate
-    private LocalDateTime studyTime; // datetime
-
-    @Column(name = "finish")
     private boolean finish;
 
+    private String location;
     private String studyRoomName;
-
 }
